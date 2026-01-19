@@ -19,68 +19,45 @@
     </style>
 </head>
 <body>
-
 <div class="container">
-    <div class="ad-unit">AD 1</div>
+    <div class="ad-unit">광고 자리 1</div>
     <div class="chat-window" id="chatWindow">
-        <div class="msg ai-msg">AI 타로 술사입니다. 당신의 고민을 들려주세요.</div>
+        <div class="msg ai-msg">AI 타로 술사입니다. 고민을 말씀하시면 운명의 카드를 뽑아드립니다.</div>
     </div>
-    <div id="loading" class="loading">우주의 기운을 모으는 중...</div>
+    <div id="loading" class="loading">카드 배열 중...</div>
     <div class="input-group">
         <input type="text" id="userInput" placeholder="고민을 입력하세요..." onkeypress="if(event.keyCode==13) askAI()">
         <button onclick="askAI()">복채 내기</button>
     </div>
-    <div class="ad-unit">AD 2</div>
+    <div class="ad-unit">광고 자리 2</div>
 </div>
-
 <script>
-    // 1. API 키 (사장님 키 그대로 넣었습니다)
     const API_KEY = "AIzaSyDbpdC5RDtiFooMmp1sacxoyTXLF6JB960"; 
-
     async function askAI() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
         if (!text) return;
-
         appendMessage('user', text);
         input.value = '';
         document.getElementById('loading').style.display = 'block';
-
         try {
-            // v1beta 대신 공식 v1 모델을 사용
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: "너는 신비롭고 용한 타로 술사야. 정중한 말투로 다음 고민에 대해 아주 길고 자세하게 타로 점괘를 봐줘: " + text }] }]
+                    contents: [{ parts: [{ text: "너는 전문 타로 술사야. 아주 상세하고 진지하게 다음 고민을 타로로 상담해줘: " + text }] }]
                 })
             });
-
             const data = await response.json();
-
-            // 만약 구글이 에러를 뱉었다면 상세 내용을 확인
-            if (data.error) {
-                console.error("구글 에러 상세:", data.error);
-                throw new Error(data.error.message);
-            }
-
+            if (data.error) throw new Error(data.error.message);
             const aiText = data.candidates[0].content.parts[0].text;
             document.getElementById('loading').style.display = 'none';
             typeResponse(aiText);
-
         } catch (error) {
             document.getElementById('loading').style.display = 'none';
-            console.error("최종 에러:", error);
-            
-            // 사용자를 위한 친절한 안내
-            let errorMsg = "기운이 닿지 않습니다. 잠시 후 다시 시도해주세요.";
-            if (error.message.includes("API key not valid")) errorMsg = "API 키가 올바르지 않습니다. 다시 발급받아주세요.";
-            if (error.message.includes("quota")) errorMsg = "현재 사용자가 많아 잠시 쉬고 있습니다. 1분 뒤 시도해주세요.";
-            
-            typeResponse(errorMsg + " (원인: " + error.message + ")");
+            typeResponse("기운이 닿지 않습니다. (원인: " + error.message + ")");
         }
     }
-
     function appendMessage(sender, text) {
         const div = document.createElement('div');
         div.className = `msg ${sender}-msg`;
@@ -89,7 +66,6 @@
         document.getElementById('chatWindow').appendChild(div);
         document.getElementById('chatWindow').scrollTop = chatWindow.scrollHeight;
     }
-
     function typeResponse(text) {
         appendMessage('ai', "");
         const target = document.getElementById('current-typing');
