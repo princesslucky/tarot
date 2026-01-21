@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 타로 마스터 | 오늘의 운세</title>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background: #0f0c29; color: white; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .ad-box { background: #333; color: #888; padding: 20px; margin: 15px 0; border-radius: 10px; font-size: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center; border: 1px dashed #555; }
+        .main-card { background: #1b1b2f; padding: 30px; border-radius: 20px; border: 1px solid #1f4068; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 80%; padding: 12px; margin: 15px 0; border-radius: 8px; border: none; font-size: 16px; }
+        button { width: 85%; padding: 15px; background: #e94560; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff2e63; }
+        #result { margin-top: 25px; text-align: left; line-height: 1.8; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; min-height: 100px; }
+        .info-text { margin-top: 40px; color: #999; font-size: 14px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="ad-box">AD - 상단 광고</div>
+
+        <div class="main-card">
+            <h1>🔮 AI 타로 마스터</h1>
+            <p>고민을 입력하면 제미나이가 운세를 풀이합니다.</p>
+            
+            <input type="text" id="question" placeholder="예: 오늘 중요한 계약이 있는데 잘 될까요?">
+            
+            <div class="ad-box">AD - 입력창 하단</div>
+            
+            <button onclick="ask()">운명의 카드 뽑기</button>
+            
+            <div id="result">질문을 입력하고 버튼을 눌러주세요.</div>
+        </div>
+
+        <div class="ad-box">AD - 결과 하단 1</div>
+        <div class="ad-box">AD - 결과 하단 2</div>
+
+        <div class="info-text">
+            <h3>타로 카드 해석의 기초</h3>
+            <p>타로 카드는 총 78장으로 구성되며, 각각의 카드는 고유한 상징과 의미를 담고 있습니다. AI 타로 시스템은 제미나이 1.5 플래시 모델을 사용하여 사용자의 상황에 가장 적합한 카드의 의미를 도출합니다...</p>
+        </div>
+
+        <div class="ad-box">AD - 최하단 1</div>
+        <div class="ad-box">AD - 최하단 2</div>
+    </div>
+
+    <script>
+        async function ask() {
+            const q = document.getElementById('question').value;
+            if(!q) return alert("질문을 입력해주세요!");
+            
+            const resDiv = document.getElementById('result');
+            resDiv.innerHTML = "<b>AI 마스터가 카드를 해석 중입니다...</b>";
+            
+            try {
+                const res = await fetch('/api/tarot', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+                resDiv.innerText = data.answer;
+            } catch (e) {
+                resDiv.innerText = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+            }
+        }
+    </script>
+</body>
+</html>
