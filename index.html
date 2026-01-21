@@ -5,65 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Ad-Profit Tarot 126</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
-        body, html { margin: 0; padding: 0; background: #f0f0f0; height: 100vh; overflow: hidden; }
+    * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+    
+    /* 배경 설정: 전체 화면을 다 쓰되 모바일 스크롤 허용 */
+    body, html { 
+        margin: 0; padding: 0; 
+        background: #f0f0f0; 
+        height: 100%; 
+        overflow-x: hidden; 
+    }
 
-        /* 5x5 그리드: 20개 광고 + 중앙 타로 메인 */
-        .mega-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            height: 100vh;
-            gap: 5px;
-            padding: 5px;
+    /* 5x5 그리드: PC에서는 광고가 꽉 차게 보임 */
+    .mega-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        height: 100vh;
+        gap: 5px;
+        padding: 5px;
+    }
+
+    .ad-unit { 
+        background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; 
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 9px; color: #ccc; overflow: hidden;
+    }
+
+    /* 중앙 타로 섹션: 내부 스크롤을 만들어 대답이 안 잘리게 함 */
+    .tarot-core {
+        grid-column: 2 / 5; grid-row: 2 / 5;
+        background: #fff; border-radius: 20px;
+        border: 3px solid #111; padding: 20px;
+        display: flex; flex-direction: column;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        z-index: 100;
+        height: 100%; /* 부모 그리드 안을 꽉 채움 */
+    }
+
+    .header { text-align: center; margin-bottom: 15px; font-weight: 900; font-size: 1.1rem; }
+    .cat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 10px; }
+    .cat-item { padding: 8px 2px; border: 1px solid #ddd; border-radius: 8px; font-size: 11px; text-align: center; cursor: pointer; background: #fff; }
+    .cat-item.on { background: #000; color: #fff; border-color: #000; }
+    .deck { display: flex; gap: 6px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; }
+    .card { min-width: 42px; height: 60px; background: #222; color: #fff; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .card.on { background: #ff4757; transform: translateY(-5px); }
+    .btn-start { width: 100%; padding: 15px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+
+    /* ★대답이 출력되는 영역: 글자가 길어도 여기서 스크롤 됨 */
+    #result-area { 
+        margin-top: 15px; font-size: 14px; line-height: 1.7; 
+        color: #333; overflow-y: auto; flex-grow: 1; 
+        padding: 15px; background: #f9f9f9; border-radius: 12px;
+        min-height: 200px; /* 대답창 공간 확보 */
+    }
+    .msg-line { display: block; opacity: 0; transform: translateY(10px); transition: 0.8s; margin-bottom: 8px; }
+    .msg-line.show { opacity: 1; transform: translateY(0); }
+
+    /* ★모바일 최적화: 타로를 맨 위로 올리고 광고는 뒤로 보냄 */
+    @media (max-width: 800px) {
+        body, html { overflow: auto; } /* 폰에서 전체 스크롤 가능 */
+        .mega-grid { 
+            display: flex; 
+            flex-direction: column; /* 세로 나열 */
+            height: auto; 
         }
-
-        /* 광고 슬롯: 실제 광고 코드를 넣으시면 됩니다 */
-        .ad-unit { 
-            background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 9px; color: #ccc; overflow: hidden;
-        }
-
-        /* 중앙 타로 섹션 (3x3 공간 차지) */
         .tarot-core {
-            grid-column: 2 / 5; grid-row: 2 / 5;
-            background: #fff; border-radius: 20px;
-            border: 3px solid #111; padding: 20px;
-            display: flex; flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            z-index: 100;
+            order: -1; /* 광고들보다 맨 위로 강제 이동 */
+            height: 600px; /* 높이 고정으로 가독성 확보 */
+            margin-bottom: 20px;
         }
-
-        .header { text-align: center; margin-bottom: 15px; font-weight: 900; font-size: 1.1rem; }
-        
-        /* 카테고리 7개 */
-        .cat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 10px; }
-        .cat-item { padding: 8px 2px; border: 1px solid #ddd; border-radius: 8px; font-size: 11px; text-align: center; cursor: pointer; background: #fff; }
-        .cat-item.on { background: #000; color: #fff; border-color: #000; }
-
-        /* 카드 30장 */
-        .deck { display: flex; gap: 6px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; }
-        .card { min-width: 42px; height: 60px; background: #222; color: #fff; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .card.on { background: #ff4757; transform: translateY(-5px); }
-
-        .btn-start { width: 100%; padding: 15px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
-
-        /* 3줄 리딩 출력 */
-        #result-area { 
-            margin-top: 15px; font-size: 14px; line-height: 1.7; 
-            color: #333; overflow-y: auto; flex-grow: 1; 
-            padding: 15px; background: #f9f9f9; border-radius: 12px;
+        .ad-unit {
+            height: 100px; /* 광고 슬롯 높이 */
+            flex-shrink: 0;
+            margin-bottom: 10px;
         }
-        .msg-line { display: block; opacity: 0; transform: translateY(10px); transition: 0.8s; margin-bottom: 8px; }
-        .msg-line.show { opacity: 1; transform: translateY(0); }
-
-        @media (max-width: 800px) {
-            .mega-grid { display: flex; flex-direction: column; overflow-y: auto; height: auto; }
-            .ad-unit { min-height: 60px; margin-bottom: 5px; }
-            .tarot-core { min-height: 550px; margin-bottom: 5px; }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
