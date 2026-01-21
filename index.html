@@ -2,63 +2,116 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>AI 타로 마스터</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean & Bright Interface</title>
     <style>
-        body { font-family: sans-serif; background: #0f0c29; color: white; text-align: center; padding: 20px; }
-        .ad-box { background: #333; color: #888; padding: 20px; margin: 10px 0; border-radius: 10px; border: 1px dashed #555; height: 80px; display: flex; align-items: center; justify-content: center; }
-        .card { background: #1b1b2f; padding: 25px; border-radius: 20px; border: 1px solid #1f4068; max-width: 500px; margin: auto; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; }
-        button { width: 85%; padding: 15px; background: #e94560; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        #result { margin-top: 20px; text-align: left; line-height: 1.6; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; }
+        /* 기본 스타일 설정 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8f9fa; /* 밝은 회색 배경 */
+            color: #333;
+        }
+
+        /* 전체 컨테이너 */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        /* 헤더 섹션 */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #111;
+        }
+
+        /* 카드 그리드 레이아웃 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* 공통 카드 스타일 */
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 */
+            transition: transform 0.3s ease;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 텍스트를 비워둔 영역 (Placeholders) */
+        .content-area {
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 강조 색상 포인트 */
+        .accent {
+            color: #007AFF; /* 깔끔한 블루 포인트 */
+        }
+
+        /* 반응형 대응 */
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="ad-box">광고 1</div>
-    <div class="ad-box">광고 2</div>
 
-    <div class="card">
-        <h1>🔮 AI 타로 마스터</h1>
-        <input type="text" id="q" placeholder="고민을 입력하세요">
-        <button onclick="ask()">운세 확인</button>
-        <div id="result"></div>
+    <div class="container">
+        <header>
+            <h1><span class="accent">Minimal</span> Design</h1>
+        </header>
+
+        <main class="grid">
+            <div class="card">
+                <div class="content-area">
+                    </div>
+            </div>
+
+            <div class="card">
+                <div class="content-area">
+                    </div>
+            </div>
+
+            <div class="card">
+                <div class="content-area">
+                    </div>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="content-area">
+                    </div>
+            </div>
+        </main>
     </div>
 
-    <div class="ad-box">광고 3</div>
-    <div class="ad-box">광고 4</div>
-    <div class="ad-box">광고 5</div>
-    <div class="ad-box">광고 6</div>
-
-    <script>
-        // 꼼수 핵심: 키를 뒤집어서 보관 (일반인은 봐도 모름)
-        const _0x4a2 = "kHYqDHqrJx6zsNfrIJ_KanRiNaNeoO7WAySazIA"; // 키를 거꾸로 뒤집은 값
-
-        function getK() {
-            // 실행될 때만 다시 뒤집어서 정상 키로 만듦
-            return _0x4a2.split("").reverse().join("");
-        }
-
-        async function ask() {
-            const q = document.getElementById('q').value;
-            if(!q) return;
-            const resDiv = document.getElementById('result');
-            resDiv.innerText = "운명을 읽는 중...";
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getK()}`;
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `타로 술사로서 "${q}"에 대한 답을 카드 한 장을 예로 들어 한국어로 말해줘.` }] }]
-                    })
-                });
-                const data = await response.json();
-                resDiv.innerText = data.candidates[0].content.parts[0].text;
-            } catch (e) {
-                resDiv.innerText = "통신 오류가 발생했습니다.";
-            }
-        }
-    </script>
 </body>
 </html>
