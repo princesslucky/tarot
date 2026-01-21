@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega 30x30 Tarot</title>
+    <title>Premium Tarot 900</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
-        body, html { margin: 0; padding: 0; height: 100vh; background: #fdfdfd; overflow: hidden; }
+        * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: #ffffff; overflow: hidden; }
 
         /* 3x3 전체 화면 그리드 */
         .grid-container {
@@ -14,34 +14,36 @@
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             height: 100vh;
-            gap: 10px;
-            padding: 10px;
+            gap: 12px;
+            padding: 12px;
         }
 
-        .ad-space { background: #fff; border: 1px solid #eee; border-radius: 15px; }
+        .ad-space { background: #fff; border: 1px solid #f0f0f0; border-radius: 20px; }
 
         /* 중앙 메인 박스 */
         .tarot-main {
             grid-column: 2; grid-row: 2;
-            background: #fff; border-radius: 25px;
-            border: 2px solid #ff4d4d; padding: 20px;
+            background: #fff; border-radius: 30px;
+            border: 2.5px solid #ffcc00; padding: 25px;
             display: flex; flex-direction: column;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            min-width: 320px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+            min-width: 340px;
         }
-        .title { text-align: center; margin: 0 0 15px 0; font-size: 1.2rem; color: #333; }
+
+        .title { text-align: center; margin: 0 0 15px 0; color: #333; font-size: 1.2rem; }
 
         /* 카테고리 선택 30개 */
         .cat-scroll {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
-            height: 120px; overflow-y: auto; margin-bottom: 15px;
-            padding: 5px; border: 1px solid #f0f0f0; border-radius: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+            height: 130px; overflow-y: auto; margin-bottom: 15px;
+            padding: 8px; border: 1px solid #eee; border-radius: 12px;
         }
         .cat-item {
-            padding: 8px; border: 1px solid #ddd; border-radius: 8px;
+            padding: 10px; border: 1px solid #eee; border-radius: 10px;
             font-size: 11px; text-align: center; cursor: pointer; background: #fff;
+            transition: 0.2s;
         }
-        .cat-item.active { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
+        .cat-item.active { background: #ffcc00; color: #fff; border-color: #ffcc00; font-weight: bold; }
 
         /* 카드 선택 30개 */
         .card-grid {
@@ -49,26 +51,32 @@
             margin-bottom: 15px;
         }
         .card {
-            aspect-ratio: 2/3; background: #f0f0f0; border-radius: 4px;
+            aspect-ratio: 2/3; background: #f8f9fa; border-radius: 6px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 12px; border: 1px solid #ddd;
+            font-size: 11px; border: 1px solid #eee; transition: 0.2s;
         }
-        .card.active { background: #333; color: #fff; border-color: #333; transform: translateY(-3px); }
+        .card.active { background: #333; color: #fff; border-color: #333; transform: scale(1.1); }
 
         button {
-            width: 100%; padding: 12px; background: #ff4d4d; color: white;
-            border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
+            width: 100%; padding: 14px; background: #ffcc00; color: #fff;
+            border: none; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 16px;
         }
+
+        /* 결과 출력창 */
         #result-box {
-            margin-top: 15px; font-size: 13px; line-height: 1.6;
+            margin-top: 15px; font-size: 13.5px; line-height: 1.8;
             color: #444; overflow-y: auto; flex-grow: 1;
-            padding: 10px; background: #fffafa; border-radius: 10px;
+            padding: 15px; background: #fffcf0; border-radius: 15px;
+            min-height: 160px;
         }
+
+        .line { display: block; opacity: 0; transform: translateY(5px); transition: all 0.5s; margin-bottom: 4px; }
+        .line.show { opacity: 1; transform: translateY(0); }
 
         @media (max-width: 800px) {
             .grid-container { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
-            .tarot-main { grid-column: 1; min-height: 600px; }
-            .ad-space { min-height: 100px; }
+            .tarot-main { grid-column: 1; min-height: 650px; }
+            .ad-space { min-height: 80px; }
         }
     </style>
 </head>
@@ -79,14 +87,13 @@
     <div class="ad-space"></div>
     
     <div class="tarot-main">
-        <h2 class="title">🔮 운명 결정소 (30x30)</h2>
+        <h2 class="title">✨ 30x30 운명 타로</h2>
         
         <div class="cat-scroll" id="catList"></div>
-
         <div class="card-grid" id="cardGrid"></div>
 
-        <button onclick="getResult()">운세 결과 확인</button>
-        <div id="result-box">카테고리와 카드를 선택하세요.</div>
+        <button id="drawBtn" onclick="getResult()">운세 결과 확인</button>
+        <div id="result-box">카테고리와 카드를 선택하고 버튼을 누르세요.</div>
     </div>
 
     <div class="ad-space"></div>
@@ -94,30 +101,35 @@
 </div>
 
 <script>
-    // 1. 카테고리 30개 정의
     const categories = [
         "재회", "속마음", "합격", "이직", "금전", "결혼", "짝사랑", "건강", "이사", "승진",
         "우정", "투자", "성형", "태몽", "궁합", "로또", "소송", "유학", "다이어트", "계약",
         "연애운", "사업운", "명예운", "자녀운", "여행", "고백", "용서", "화해", "독립", "행운"
     ];
+
     let selectedCat = "";
     let selectedCard = null;
 
-    // 2. 900개 답변 생성 (예시 패턴으로 구조화)
-    const getAnswer = (cat, cardIdx) => {
-        const answers = [
-            "은 지금이 가장 중요한 시기입니다. 서두르지 마세요.",
-            "은 긍정적인 변화의 흐름이 감지됩니다. 자신감을 가지세요.",
-            "은 주변 사람의 도움을 받으면 쉽게 해결될 운입니다.",
-            "은 조금 더 신중한 태도가 필요합니다. 기다림이 보약입니다.",
-            "은 뜻밖의 행운이 찾아와 당신을 웃게 할 것입니다.",
-            "은 결과보다 과정을 즐길 때 더 좋은 보상이 따릅니다."
-        ];
-        // 카테고리와 카드 번호에 따라 다른 답변 조합
-        return `[${cat}]에 대한 당신의 선택: ${cardIdx + 1}번 카드 결과입니다. ${cat}${answers[cardIdx % answers.length]}`;
+    // 카테고리별 특화 답변 템플릿 (카테고리별 조언 7줄 구성)
+    const templates = {
+        "재회": ["상대방의 마음속에 여전히 당신의 자리가 보입니다.", "하지만 서두른 연락은 오히려 독이 될 수 있습니다.", "과거의 서운함이 정화되는 시간이 조금 더 필요하네요.", "보름달이 뜨는 시기를 전후해 기운이 바뀝니다.", "스스로를 가꾸며 기다리면 상대가 먼저 다가올 것입니다.", "당신의 진심은 결국 닿게 되어 있으니 안심하세요.", "행운의 컬러인 블루가 당신의 소통을 도울 것입니다."],
+        "금전": ["현재 금전의 흐름은 막혀있으나 곧 물꼬가 트입니다.", "생각지 못한 곳에서 작은 수익이 발생할 기운입니다.", "불필요한 지출을 막는 것이 첫 번째 과제입니다.", "투자는 아직 시기가 이르니 신중을 기하세요.", "금요일 오후에 금전적인 기쁜 소식이 들려옵니다.", "지갑에 노란색 소품을 넣어두면 재물운이 상승합니다.", "뿌린 만큼 거두는 정직한 소득이 당신을 채울 것입니다."],
+        "합격": ["당신의 노력은 결코 배신하지 않는 운의 흐름입니다.", "시험 당일의 컨디션 관리가 당락을 결정짓겠습니다.", "막판 스퍼트를 올린다면 충분히 승산이 있습니다.", "모르는 문제는 직관을 믿고 과감히 선택하세요.", "주변 사람들에게 합격 소식을 전하는 모습이 보입니다.", "동쪽 방향에서 공부하면 집중력이 배가될 것입니다.", "당당하게 임하세요. 합격의 문이 이미 열리고 있습니다."],
+        "속마음": ["상대는 당신의 배려 깊은 모습에 호감을 느낍니다.", "다만 표현이 서툴러 오해를 사고 있을 뿐입니다.", "진지한 대화의 시간을 마련해보는 것을 추천합니다.", "상대의 눈을 바라보며 진심을 전달해보세요.", "그 사람도 당신과 같은 떨림을 느끼고 있습니다.", "먼저 손을 내밀어준다면 관계가 급진전될 것입니다.", "두 사람 사이에 핑크빛 기류가 곧 선명해집니다."]
     };
 
-    // UI 생성: 카테고리 30개
+    // 기본 답변 생성기 (등록되지 않은 카테고리용)
+    const getDefaultAnswer = (cat) => [
+        `${cat}운에 대한 우주의 기운이 당신을 향하고 있습니다.`,
+        "현재 상황은 변화의 변곡점에 서 있는 모습입니다.",
+        "긍정적인 마음가짐이 가장 강력한 자석이 됩니다.",
+        "주변의 조언보다는 당신의 내면 목소리를 믿으세요.",
+        "앞으로 7일 이내에 중요한 변화의 신호가 옵니다.",
+        "포기하지 않고 나아가는 당신에게 보상이 따릅니다.",
+        `당신의 ${cat}운은 곧 보름달처럼 밝게 빛날 것입니다.`
+    ];
+
+    // UI 생성
     const catList = document.getElementById('catList');
     categories.forEach(name => {
         const div = document.createElement('div');
@@ -130,12 +142,11 @@
         };
         catList.appendChild(div);
     });
-    // UI 생성: 카드 30개
+
     const cardGrid = document.getElementById('cardGrid');
     for(let i=0; i<30; i++) {
         const div = document.createElement('div');
-        div.className = 'card';
-        div.innerText = i + 1;
+        div.className = 'card'; div.innerText = i + 1;
         div.onclick = function() {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
             this.classList.add('active');
@@ -143,17 +154,32 @@
         };
         cardGrid.appendChild(div);
     }
-    // 결과 보기
+
+    // 천천히 한 줄씩 나오는 함수
     function getResult() {
         const resBox = document.getElementById('result-box');
-        if(!selectedCat || selectedCard === null) {
-            alert("카테고리와 카드를 모두 골라주세요!");
-            return;
-        }
-    
-        const finalMessage = getAnswer(selectedCat, selectedCard);
-        resBox.innerText = finalMessage;
+        const btn = document.getElementById('drawBtn');
+        if(!selectedCat || selectedCard === null) return alert("카테고리와 카드를 골라주세요!");
+
+        btn.disabled = true;
+        resBox.innerHTML = "";
+        
+        const lines = templates[selectedCat] || getDefaultAnswer(selectedCat);
+        
+        lines.forEach((text, index) => {
+            const lineSpan = document.createElement('span');
+            lineSpan.className = 'line';
+            lineSpan.innerText = `${index + 1}. ${text}`;
+            resBox.appendChild(lineSpan);
+
+            setTimeout(() => {
+                lineSpan.classList.add('show');
+                resBox.scrollTop = resBox.scrollHeight;
+                if(index === lines.length - 1) btn.disabled = false;
+            }, index * 700); // 0.7초 간격으로 한 줄씩 등장
+        });
     }
 </script>
+
 </body>
 </html>
