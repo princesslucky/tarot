@@ -3,153 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Premium Tarot</title>
+    <title>AI Tarot Service</title>
     <style>
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; height: 100vh; background: #fcfcfc; font-family: 'Pretendard', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100vh; background: #ffffff; font-family: sans-serif; overflow: hidden; }
 
-        .grid-layout {
+        /* 9분할 그리드 */
+        .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             height: 100vh;
-            gap: 15px;
-            padding: 15px;
+            gap: 10px;
+            padding: 10px;
         }
 
-        .ad-zone {
-            background: #ffffff;
+        .ad-area {
+            background: #fff;
             border: 1px solid #f0f0f0;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #eee;
-            font-size: 11px;
+            border-radius: 15px;
         }
 
-        .tarot-box {
+        /* 메인 타로 박스 */
+        .main-box {
             grid-column: 2; grid-row: 2;
-            background: #fff; border-radius: 28px;
+            background: #fff; border-radius: 25px;
             border: 2px solid #00d2ff; padding: 20px;
             display: flex; flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            min-width: 300px; z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            min-width: 300px;
         }
-
-        .title { text-align: center; margin: 0 0 10px 0; color: #222; font-size: 1.1rem; }
 
         textarea {
-            width: 100%; height: 50px; border: 1px solid #eee;
-            border-radius: 12px; padding: 10px; resize: none; outline: none; font-size: 14px;
+            width: 100%; height: 60px; border: 1px solid #eee;
+            border-radius: 12px; padding: 10px; outline: none; font-size: 14px;
         }
 
-        .card-selector {
-            margin: 10px 0; display: flex; justify-content: center;
-            gap: 5px; overflow-x: auto; padding: 10px 0;
+        /* 카드 선택 영역 */
+        .deck-wrapper {
+            display: flex; gap: 5px; overflow-x: auto;
+            margin: 15px 0; padding-bottom: 5px;
         }
-
-        .mini-card {
-            min-width: 30px; height: 50px; background: #00d2ff;
-            border-radius: 5px; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;
+        .card-item {
+            min-width: 35px; height: 55px; background: #f8f9fa;
+            border: 1px solid #eee; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; transition: 0.2s;
         }
-        .mini-card:hover { transform: translateY(-5px); background: #009ecf; }
-        .mini-card.selected { background: #333; transform: translateY(-5px); }
+        .card-item:hover { background: #e3f2fd; transform: translateY(-3px); }
+        .card-item.active { border-color: #00d2ff; background: #e3f2fd; font-weight: bold; }
 
         button {
             width: 100%; padding: 12px; background: #00d2ff; color: white;
             border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
         }
 
-        #display {
+        #output {
             margin-top: 15px; font-size: 13px; line-height: 1.6;
-            overflow-y: auto; flex-grow: 1; color: #444; border-top: 1px solid #f9f9f9; padding-top: 10px;
+            overflow-y: auto; flex-grow: 1; color: #333;
         }
 
-        .loading { display: none; text-align: center; color: #00d2ff; font-weight: bold; margin: 5px; }
+        .loading { display: none; text-align: center; color: #00d2ff; margin-bottom: 10px; }
 
         @media (max-width: 800px) {
-            .grid-layout { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
-            .tarot-box { grid-column: 1; min-height: 500px; }
-            .ad-zone { min-height: 100px; }
+            .grid-container { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
+            .main-box { grid-column: 1; min-height: 450px; }
+            .ad-area { min-height: 100px; }
         }
     </style>
 </head>
 <body>
 
-<div class="grid-layout">
-    <div class="ad-zone"></div><div class="ad-zone"></div><div class="ad-zone"></div>
-    <div class="ad-zone"></div>
+<div class="grid-container">
+    <div class="ad-area"></div><div class="ad-area"></div><div class="ad-area"></div>
+    <div class="ad-area"></div>
     
-    <div class="tarot-box">
-        <h2 class="title">🔮 30장 AI 타로</h2>
-        <textarea id="userInput" placeholder="고민을 입력하고 카드를 골라주세요."></textarea>
+    <div class="main-box">
+        <textarea id="msg" placeholder="질문을 적고 아래에서 카드를 고르세요."></textarea>
         
-        <div class="card-selector" id="deck"></div>
+        <div class="deck-wrapper" id="deckContainer"></div>
 
-        <button onclick="analyze()">운세 확인하기</button>
-        <div id="wait" class="loading">AI가 카드를 해석 중...</div>
-        <div id="display"></div>
+        <button onclick="run()">운세 해석하기</button>
+        <div id="wait" class="loading">AI가 분석 중...</div>
+        <div id="output"></div>
     </div>
 
-    <div class="ad-zone"></div>
-    <div class="ad-zone"></div><div class="ad-zone"></div><div class="ad-zone"></div>
+    <div class="ad-area"></div>
+    <div class="ad-area"></div><div class="ad-area"></div><div class="ad-area"></div>
 </div>
 
 <script>
-    // 30장의 타로 카드 데이터
-    const tarotDeck = [
-        "광대", "마법사", "고위 여사제", "여황제", "황제", "교황", "연인", "전차", "힘", "은둔자",
-        "운명의 수레바퀴", "정의", "매달린 사람", "죽음", "절제", "악마", "탑", "별", "달", "태양",
-        "심판", "세계", "지팡이 에이스", "컵 에이스", "검 에이스", "펜타클 에이스", "지팡이 7", "컵 10", "검 3", "펜타클 왕"
-    ];
+    // 30장 카드 리스트
+    const cards = ["바보", "마법사", "여사제", "여황제", "황제", "교황", "연인", "전차", "힘", "은둔자", "운명", "정의", "희생", "죽음", "절제", "악마", "탑", "별", "달", "태양", "심판", "세계", "지팡이1", "컵1", "검1", "코인1", "지팡이왕", "컵퀸", "검기사", "코인페이지"];
+    let picked = "";
 
-    let selectedShowing = null;
-
-    // 카드 30개 생성
-    const deckDiv = document.getElementById('deck');
-    for(let i=0; i<30; i++) {
-        const card = document.createElement('div');
-        card.className = 'mini-card';
-        card.innerText = "?";
-        card.onclick = function() {
-            document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('selected'));
-            this.classList.add('selected');
-            selectedShowing = tarotDeck[i];
+    const container = document.getElementById('deckContainer');
+    cards.forEach(name => {
+        const div = document.createElement('div');
+        div.className = 'card-item';
+        div.innerText = "🃏";
+        div.onclick = function() {
+            document.querySelectorAll('.card-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            picked = name;
         };
-        deckDiv.appendChild(card);
-    }
+        container.appendChild(div);
+    });
 
-    async function analyze() {
-        const q = document.getElementById('userInput').value;
-        const out = document.getElementById('display');
+    async function run() {
+        const q = document.getElementById('msg').value;
+        const out = document.getElementById('output');
         const load = document.getElementById('wait');
 
-        if(!q) return alert("질문을 입력해주세요.");
-        if(!selectedShowing) return alert("카드를 한 장 선택해주세요.");
+        if(!q || !picked) return alert("질문 입력과 카드 선택을 모두 해주세요.");
 
-        // 키 보안 결합 (난독화 유지)
-        const c = ["AsaziIA", "O7W", "ane", "Iin", "ri", "KaN", "J_", "frI", "szN", "kHYqDHrqxJ6"];
-        const secret = c[9]+c[8]+c[7]+c[6]+c[5]+c[4]+c[3]+c[2]+c[1]+c[0];
-        const finalKey = secret.split('').reverse().join('');
+        // [오류 해결 핵심] 키 조각내기 및 역순 재조합
+        // 실제 키: AIzaSyAW7OenaNIirNaK_JIrfNzs6JxrqHDqYHk
+        const s1 = "kHYqDHrqxJ";
+        const s2 = "6szNfrIJ_K";
+        const s3 = "aNriINaneO";
+        const s4 = "7WAsaziIA"; 
+        // 합치면: kHYqDHrqxJ6szNfrIJ_KaNriINaneO7WAsaziIA (원본 키의 역순)
+        
+        const fullSecret = s1 + s2 + s3 + s4;
+        const realKey = fullSecret.split('').reverse().join(''); 
 
         out.innerText = '';
         load.style.display = 'block';
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${finalKey}`, {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${realKey}`;
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `질문: "${q}", 뽑은 카드: "${selectedShowing}". 이 타로 카드의 의미를 질문에 맞춰서 아주 상세하고 희망적으로 해석해줘.` }] }]
+                    contents: [{ parts: [{ text: `질문: ${q}, 뽑은 타로카드: ${picked}. 타로술사처럼 전문적이고 희망차게 해석해줘.` }] }]
                 })
             });
 
-            const data = await response.json();
-            out.innerText = data.candidates[0].content.parts[0].text;
-        } catch (err) {
-            out.innerText = "연결 오류가 발생했습니다.";
+            const data = await res.json();
+            
+            if(data.error) {
+                out.innerHTML = `<span style="color:red">에러: ${data.error.message}</span>`;
+            } else {
+                out.innerText = data.candidates[0].content.parts[0].text;
+            }
+        } catch (e) {
+            out.innerText = "연결에 실패했습니다. API 키나 인터넷 상태를 확인하세요.";
         } finally {
             load.style.display = 'none';
         }
